@@ -1,0 +1,5 @@
+name: MyPoop
+version: '${version}'
+main: spighetto.mypoop.MyPoop
+api-version: 1.19
+authors: [ Infinituum, Spighetto ]
