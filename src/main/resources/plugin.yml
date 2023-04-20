@@ -3,3 +3,8 @@ version: '${version}'
 main: spighetto.mypoop.MyPoop
 api-version: 1.19
 authors: [ Infinituum, Spighetto ]
+description: This plugin allows players to poop
+commands:
+  mypoop:
+    description: General command for MyPoop plugin
+    aliases: [myp]
