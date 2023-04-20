@@ -2,8 +2,8 @@ plugins {
     id 'java'
 }
 
-group = 'spighetto'
-version = '3'
+group = project.property("group")
+version = project.property("version")
 
 repositories {
     mavenCentral()
