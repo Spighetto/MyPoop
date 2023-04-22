@@ -9,26 +9,22 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-import spighetto.mypoop.MyPoop;
-import spighetto.mypoop.utils.Storage;
+import spighetto.mypoop.config.ConfigManager;
+import spighetto.mypoop.utils.DataStorage;
+import spighetto.mypoop.utils.VersionManager;
 import spighettoapi.common.interfaces.IPoop;
 
 import static spighetto.mypoop.utils.Utils.*;
 
 public class PlayerEvents implements Listener {
-    private final int serverVersion;
-
-    public PlayerEvents(int serverVersion){
-        this.serverVersion = serverVersion;
-    }
-
     @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
 
-        if (Storage.playersLevelFood.containsKey(player.getUniqueId())) {
-            if (Storage.isPlayerFoodTrigger(player)) {
+        if (DataStorage.playersLevelFood.containsKey(player.getUniqueId())) {
+            if (DataStorage.isPlayerFoodTrigger(player)) {
                 if (player.isSneaking()) {
+                    int serverVersion = VersionManager.getServerVersion();
                     IPoop poop;
 
                     if(serverVersion >= 8 && serverVersion <= 11) {
@@ -45,7 +41,7 @@ public class PlayerEvents implements Listener {
                         return;
                     }
 
-                    if (MyPoop.getPoopConfig().getNamedPoop()) {
+                    if (ConfigManager.getPoopConfig().getNamedPoop()) {
                         toFix("Version adapters");
                         //poop.setName(player.getName(), plugin.getPoopConfig().getColorPoopName());
                     } else {
@@ -55,7 +51,7 @@ public class PlayerEvents implements Listener {
 
                     toFix("Version adapters");
                     //plugin.newPoop(poop);
-                    Storage.playersLevelFood.remove(player.getUniqueId());
+                    DataStorage.playersLevelFood.remove(player.getUniqueId());
                 }
             }
         }
@@ -64,16 +60,16 @@ public class PlayerEvents implements Listener {
     @EventHandler
     public void onFoodChange(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player player) {
-            if (!Storage.playersLevelFood.containsKey(player.getUniqueId()))
-                Storage.playersLevelFood.put(player.getUniqueId(), 0);
+            if (!DataStorage.playersLevelFood.containsKey(player.getUniqueId()))
+                DataStorage.playersLevelFood.put(player.getUniqueId(), 0);
 
-            if (!Storage.isPlayerFoodLimit(player)) {
+            if (!DataStorage.isPlayerFoodLimit(player)) {
                 if (event.getFoodLevel() - player.getFoodLevel() > 0) {
 
-                    Storage.playersLevelFood.put(player.getUniqueId(), Storage.playersLevelFood.get(player.getUniqueId()) + event.getFoodLevel() - player.getFoodLevel());
+                    DataStorage.playersLevelFood.put(player.getUniqueId(), DataStorage.playersLevelFood.get(player.getUniqueId()) + event.getFoodLevel() - player.getFoodLevel());
 
-                    if (Storage.isPlayerFoodTrigger(player)) {
-                        printMessage(player, MyPoop.getPoopConfig().getMessage(), serverVersion);
+                    if (DataStorage.isPlayerFoodTrigger(player)) {
+                        printMessage(player, ConfigManager.getPoopConfig().getMessage(), VersionManager.getServerVersion());
                     }
                 }
             }
@@ -82,20 +78,24 @@ public class PlayerEvents implements Listener {
 
     @EventHandler
     public void checkCanEat(PlayerItemConsumeEvent event) {
-        if (Storage.playersLevelFood.containsKey(event.getPlayer().getUniqueId())) {
-            if (Storage.isPlayerFoodLimit(event.getPlayer())) {
+        if (DataStorage.playersLevelFood.containsKey(event.getPlayer().getUniqueId())) {
+            if (DataStorage.isPlayerFoodLimit(event.getPlayer())) {
                 event.setCancelled(true);
-                printMessage(event.getPlayer(), MyPoop.getPoopConfig().getMessageAtLimit(), serverVersion);
+                printMessage(event.getPlayer(), ConfigManager.getPoopConfig().getMessageAtLimit(), VersionManager.getServerVersion());
             }
         }
     }
 
     @EventHandler
     public void checkCanEatCake(PlayerInteractEvent event) {
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-            if (event.getClickedBlock().getType().equals(Material.CAKE))
-                if (Storage.isPlayerFoodLimit(event.getPlayer()))
-                    event.setCancelled(true);
+        if(!event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getClickedBlock() == null) return;
 
+        Material blockType = event.getClickedBlock().getType();
+
+        if(!blockType.equals(Material.CAKE)) return;
+
+        if (DataStorage.isPlayerFoodLimit(event.getPlayer())) {
+            event.setCancelled(true);
+        }
     }
 }

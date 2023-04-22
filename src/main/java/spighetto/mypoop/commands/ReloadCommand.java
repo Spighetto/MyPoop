@@ -4,9 +4,9 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
 import spighetto.mypoop.MyPoop;
-import spighetto.mypoop.utils.Storage;
+import spighetto.mypoop.config.ConfigManager;
+import spighetto.mypoop.utils.DataStorage;
 
 public class ReloadCommand implements CommandExecutor {
     @Override
@@ -16,10 +16,11 @@ public class ReloadCommand implements CommandExecutor {
 
             if (args[0].equalsIgnoreCase("reload")) {
 
-                Storage.deletePoops(MyPoop.getPluginInstance().getServer().getWorlds());
+                DataStorage.deleteEntries();
 
                 try {
-                    onReload();
+                    ConfigManager.reloadConfig();
+                    MyPoop.getPluginInstance().restartPlugin();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -30,13 +31,5 @@ public class ReloadCommand implements CommandExecutor {
         }
 
         return false;
-    }
-
-    public void onReload() {
-        Plugin plugin = MyPoop.getPluginInstance();
-
-        plugin.reloadConfig();
-        plugin.getServer().getPluginManager().disablePlugin(plugin);
-        plugin.getServer().getPluginManager().enablePlugin(plugin);
     }
 }

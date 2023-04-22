@@ -1,4 +1,4 @@
-package spighetto.mypoop.utils;
+package spighetto.mypoop.config;
 
 public class Config {
     private final int trigger;
@@ -10,9 +10,9 @@ public class Config {
     private final String message;
     private final String messageAtLimit;
     private final int wherePrint;
-    private Boolean allCropsNearby;
-    private double radius;
-    private Boolean randomGrow;
+    private final Boolean allCropsNearby;
+    private final double radius;
+    private final Boolean randomGrow;
 
     public Config(
             int trigger,
@@ -49,6 +49,7 @@ public class Config {
     public int getLimit(){
         return limit;
     }
+
     public void setLimit(int limit){
         this.limit = limit;
     }

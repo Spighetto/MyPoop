@@ -1,8 +1,9 @@
 package spighetto.mypoop.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import spighetto.mypoop.MyPoop;
+import spighetto.mypoop.config.ConfigManager;
 import spighettoapi.common.interfaces.IMessages;
 
 public class Utils {
@@ -12,6 +13,10 @@ public class Utils {
 
     public static void toFix(String context) {
         throw new Error("[ERROR] " + context + " need to be fixed before usage");
+    }
+
+    public static void log(String text) {
+        Bukkit.getConsoleSender().sendMessage("MyPoop: " + text);
     }
 
     public static void printMessage(Player player, String msg, int serverVersion) {
@@ -28,7 +33,7 @@ public class Utils {
         }
 
         toFix("Messages adapters");
-        switch (MyPoop.getPoopConfig().getWherePrint()) {
+        switch (ConfigManager.getPoopConfig().getWherePrint()) {
             case 2:
                 //message.sendTitle();
                 break;
