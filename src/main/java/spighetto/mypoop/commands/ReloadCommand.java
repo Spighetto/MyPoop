@@ -10,26 +10,21 @@ import spighetto.mypoop.utils.DataStorage;
 
 public class ReloadCommand implements CommandExecutor {
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String nome, String[] args) {
-        if (cmd.getName().equalsIgnoreCase("mypoop")) {
-            if (args.length == 0) return false;
+    public boolean onCommand(CommandSender sender, Command cmd, String name, String[] args) {
+        if (!cmd.getName().equalsIgnoreCase("mypoop") || args.length == 0) return false;
 
-            if (args[0].equalsIgnoreCase("reload")) {
-
-                DataStorage.deleteEntries();
-
-                try {
-                    ConfigManager.reloadConfig();
-                    MyPoop.getPluginInstance().restartPlugin();
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-                sender.sendMessage(ChatColor.GREEN + "MyPoop: Reload complete");
-            } else {
-                sender.sendMessage(ChatColor.RED + "MyPoop: Unknown command");
-            }
+        if (!args[0].equalsIgnoreCase("reload")) {
+            sender.sendMessage(ChatColor.RED + "MyPoop: Unknown command");
+            return false;
         }
 
-        return false;
+        DataStorage.deleteEntries();
+
+        ConfigManager.reloadConfig();
+        MyPoop.getPluginInstance().restartPlugin();
+
+        sender.sendMessage(ChatColor.GREEN + "MyPoop: Reload complete");
+
+        return true;
     }
 }

@@ -19,7 +19,8 @@ public class Utils {
         Bukkit.getConsoleSender().sendMessage("MyPoop: " + text);
     }
 
-    public static void printMessage(Player player, String msg, int serverVersion) {
+    public static void printMessage(Player player, String msg) {
+        int serverVersion = VersionManager.getServerVersion();
         IMessages message;
 
         if(serverVersion >= 8 && serverVersion <= 11) {

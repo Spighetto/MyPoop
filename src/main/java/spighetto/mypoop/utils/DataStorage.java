@@ -39,13 +39,13 @@ public class DataStorage {
 
     public static void deleteEntries() {
         if(listPoops.size() > 0) {
-            ArrayList<Entity> en = new ArrayList<>();
+            ArrayList<Entity> entityBuffer = new ArrayList<>();
 
             for(World world : MyPoop.getPluginInstance().getServer().getWorlds()) {
                 for(Entity entityInWorld : world.getEntities()) {
                     for(UUID ii : listPoops) {
                         if(ii.equals(entityInWorld.getUniqueId())) {
-                            en.add(entityInWorld);
+                            entityBuffer.add(entityInWorld);
                         }
                     }
                 }
@@ -53,7 +53,7 @@ public class DataStorage {
 
             listPoops.clear();
 
-            en.forEach(Entity::remove);		// Method reference technique
+            entityBuffer.forEach(Entity::remove);		// Method reference technique
         }
     }
 

@@ -26,9 +26,9 @@ public class VersionManager {
             return Integer.parseInt(version);
         } catch (Exception e){
             log("Error: the server version could not be verified or incorrect server version");
-        }
 
-        return -1;
+            return -1;
+        }
     }
 
     private static int parsePatchVersion(String minecraftVersion) {

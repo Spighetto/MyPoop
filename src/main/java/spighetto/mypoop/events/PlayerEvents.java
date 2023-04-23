@@ -21,40 +21,37 @@ public class PlayerEvents implements Listener {
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
 
-        if (DataStorage.playersLevelFood.containsKey(player.getUniqueId())) {
-            if (DataStorage.isPlayerFoodTrigger(player)) {
-                if (player.isSneaking()) {
-                    int serverVersion = VersionManager.getServerVersion();
-                    IPoop poop;
+        if (!DataStorage.playersLevelFood.containsKey(player.getUniqueId()) || !DataStorage.isPlayerFoodTrigger(player) || !player.isSneaking()) return;
 
-                    if(serverVersion >= 8 && serverVersion <= 11) {
-                        unimplemented("Adapter v1_8");
-                        //poop = new Poop_v1_8(player);
-                    } else if (serverVersion >= 12 && serverVersion <= 18) {
-                        unimplemented("Adapter v1_13");
-                        //poop = new Poop_v1_13(player);
-                    } else if (serverVersion == 19) {
-                        unimplemented("Adapter v1_19");
-                        //poop = new MyPoop_v1_19_4(player);
-                    }
-                    else {
-                        return;
-                    }
+        int serverVersion = VersionManager.getServerVersion();
+        IPoop poop;
 
-                    if (ConfigManager.getPoopConfig().getNamedPoop()) {
-                        toFix("Version adapters");
-                        //poop.setName(player.getName(), plugin.getPoopConfig().getColorPoopName());
-                    } else {
-                        toFix("Version adapters");
-                        //poop.setName(player.getName());
-                    }
-
-                    toFix("Version adapters");
-                    //plugin.newPoop(poop);
-                    DataStorage.playersLevelFood.remove(player.getUniqueId());
-                }
-            }
+        if(serverVersion >= 8 && serverVersion <= 11) {
+            unimplemented("Adapter v1_8");
+            //poop = new Poop_v1_8(player);
+        } else if (serverVersion >= 12 && serverVersion <= 18) {
+            unimplemented("Adapter v1_13");
+            //poop = new Poop_v1_13(player);
+        } else if (serverVersion == 19) {
+            unimplemented("Adapter v1_19");
+            //poop = new MyPoop_v1_19_4(player);
         }
+        else {
+            return;
+        }
+
+        if (ConfigManager.getPoopConfig().getNamedPoop()) {
+            toFix("Version adapters");
+            //poop.setName(player.getName(), plugin.getPoopConfig().getColorPoopName());
+        } else {
+            toFix("Version adapters");
+            //poop.setName(player.getName());
+        }
+
+        toFix("Version adapters");
+        //plugin.newPoop(poop);
+        DataStorage.playersLevelFood.remove(player.getUniqueId());
+
     }
 
     @EventHandler
@@ -63,14 +60,12 @@ public class PlayerEvents implements Listener {
             if (!DataStorage.playersLevelFood.containsKey(player.getUniqueId()))
                 DataStorage.playersLevelFood.put(player.getUniqueId(), 0);
 
-            if (!DataStorage.isPlayerFoodLimit(player)) {
-                if (event.getFoodLevel() - player.getFoodLevel() > 0) {
+            if (!DataStorage.isPlayerFoodLimit(player) && event.getFoodLevel() - player.getFoodLevel() > 0) {
+                int playerFoodLevel = DataStorage.playersLevelFood.get(player.getUniqueId());
+                DataStorage.playersLevelFood.put(player.getUniqueId(), playerFoodLevel + event.getFoodLevel() - player.getFoodLevel());
 
-                    DataStorage.playersLevelFood.put(player.getUniqueId(), DataStorage.playersLevelFood.get(player.getUniqueId()) + event.getFoodLevel() - player.getFoodLevel());
-
-                    if (DataStorage.isPlayerFoodTrigger(player)) {
-                        printMessage(player, ConfigManager.getPoopConfig().getMessage(), VersionManager.getServerVersion());
-                    }
+                if (DataStorage.isPlayerFoodTrigger(player)) {
+                    printMessage(player, ConfigManager.getPoopConfig().getMessage());
                 }
             }
         }
@@ -78,11 +73,11 @@ public class PlayerEvents implements Listener {
 
     @EventHandler
     public void checkCanEat(PlayerItemConsumeEvent event) {
-        if (DataStorage.playersLevelFood.containsKey(event.getPlayer().getUniqueId())) {
-            if (DataStorage.isPlayerFoodLimit(event.getPlayer())) {
-                event.setCancelled(true);
-                printMessage(event.getPlayer(), ConfigManager.getPoopConfig().getMessageAtLimit(), VersionManager.getServerVersion());
-            }
+        if (!DataStorage.playersLevelFood.containsKey(event.getPlayer().getUniqueId())) return;
+
+        if (DataStorage.isPlayerFoodLimit(event.getPlayer())) {
+            event.setCancelled(true);
+            printMessage(event.getPlayer(), ConfigManager.getPoopConfig().getMessageAtLimit());
         }
     }
 
